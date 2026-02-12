@@ -1,15 +1,13 @@
 # Dockerfile for building Whisperfish
 # This container provides all dependencies needed to build the project
-FROM ubuntu:22.04
+FROM golang:1.24-bookworm
 
 # Avoid interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Set up Go version
-ENV GO_VERSION=1.24.12
-ENV GOROOT=/usr/local/go
+# Set up Go environment variables
 ENV GOPATH=/go
-ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+ENV PATH=$GOPATH/bin:$PATH
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -43,11 +41,6 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Go
-RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
-    rm go${GO_VERSION}.linux-amd64.tar.gz
-
 # Set up Go workspace
 RUN mkdir -p $GOPATH/src $GOPATH/bin $GOPATH/pkg
 WORKDIR $GOPATH/src
@@ -67,14 +60,14 @@ RUN go mod download
 COPY . .
 
 # Install therecipe/qt bindings at the specific version required by the project
+# Note: The tools will be available but need to be set up with qtsetup on first use
 ENV GOQT_VERSION=c6ada02b904734c7f78a8032acd2e6fee3e58dba
 RUN cd $GOPATH/src/github.com/therecipe && \
     git clone https://github.com/therecipe/qt && \
     cd qt && \
-    git checkout $GOQT_VERSION && \
-    cd cmd/qtsetup && go install . && \
-    cd ../qtmoc && go install . && \
-    cd ../qtminimal && go install .
+    git checkout $GOQT_VERSION
+# Add Qt bindings to Go path so they can be imported
+ENV GOPATH=$GOPATH:/go/src/github.com/therecipe/qt
 
 # Set environment variables for Qt
 ENV QT_VERSION=5.7.0

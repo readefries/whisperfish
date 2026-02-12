@@ -1,6 +1,8 @@
 module github.com/aebruno/whisperfish
 
-go 1.24.12
+go 1.24.0
+
+toolchain go1.24.13
 
 require (
 	github.com/aebruno/textsecure v0.0.0-20180401152730-b6c5e09f570b
@@ -23,13 +25,11 @@ require (
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/gopherjs/gopherjs v1.20.1 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
-	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/lib/pq v1.11.2 // indirect
 	github.com/mattn/go-sqlite3 v1.14.34 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	golang.org/x/net v0.50.0 // indirect
-	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/term v0.40.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )

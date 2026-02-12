@@ -1,0 +1,33 @@
+{
+  "name": "Whisperfish Development",
+  "dockerFile": "../Dockerfile",
+  "context": "..",
+  
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash",
+    "go.gopath": "/go",
+    "go.goroot": "/usr/local/go",
+    "go.toolsGopath": "/go",
+    "go.useLanguageServer": true
+  },
+  
+  "extensions": [
+    "golang.go",
+    "ms-vscode.cpptools",
+    "ms-azuretools.vscode-docker"
+  ],
+  
+  "postCreateCommand": "go version && qtmoc --version",
+  
+  "remoteUser": "root",
+  
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+  
+  "containerEnv": {
+    "GOPATH": "/go",
+    "GOROOT": "/usr/local/go",
+    "QT_VERSION": "5.7.0",
+    "QT_PKG_CONFIG": "true"
+  }
+}

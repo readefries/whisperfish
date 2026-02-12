@@ -1,0 +1,50 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, master, develop, copilot/* ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Build Docker image
+      run: docker build -t whisperfish-build .
+    
+    - name: Run tests in container
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          whisperfish-build \
+          bash -c "go test -v ./store/..."
+    
+    - name: Build project in container
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          whisperfish-build \
+          bash -c "go build -v ./..."
+    
+    - name: Generate Qt bindings
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          whisperfish-build \
+          bash -c "QT_VERSION=5.7.0 qtmoc ./settings && QT_VERSION=5.7.0 qtmoc ./model && QT_VERSION=5.7.0 qtmoc ./worker"
+    
+    - name: Verify full build
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          whisperfish-build \
+          bash -c "go build -v ."

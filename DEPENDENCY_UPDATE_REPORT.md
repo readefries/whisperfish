@@ -84,12 +84,40 @@ ok  	github.com/aebruno/whisperfish/store	0.254s
 
 All existing store tests pass with updated dependencies.
 
+## Docker Build Environment
+
+A complete Docker build environment has been added to simplify development and CI/CD:
+
+- **Dockerfile** - Container with all build dependencies (Go, Qt 5.7.0, SQLCipher, therecipe/qt)
+- **.devcontainer/** - VS Code Dev Container configuration for development
+- **.github/workflows/build.yml** - GitHub Actions workflow for automated builds
+- **DOCKER.md** - Comprehensive documentation for using the Docker environment
+
+### Using the Docker Environment
+
+```bash
+# Build the Docker image
+docker build -t whisperfish-build .
+
+# Run tests
+docker run --rm -v $(pwd):/workspace -w /workspace whisperfish-build go test -v ./store/...
+
+# Generate Qt bindings and build
+docker run --rm -v $(pwd):/workspace -w /workspace whisperfish-build bash -c "
+  QT_VERSION=5.7.0 qtmoc ./settings && \
+  QT_VERSION=5.7.0 qtmoc ./model && \
+  QT_VERSION=5.7.0 qtmoc ./worker && \
+  go build -v .
+"
+```
+
 ## Recommendations
 
 1. **Next Steps for Full Compilation**:
-   - Set up Sailfish OS SDK environment (as per README.rst)
-   - Run `./build.sh prep` to regenerate Qt bindings
-   - Verify full application builds in SDK environment
+   - Use the provided Docker environment for development and CI/CD
+   - Or set up Sailfish OS SDK environment (as per README.rst) for RPM packaging
+   - Run `./build.sh prep` or use Docker to regenerate Qt bindings
+   - Verify full application builds in SDK environment or Docker
 
 2. **Cleanup**:
    - The `vendor/` directory has been removed as it's no longer needed with Go modules
@@ -100,6 +128,7 @@ All existing store tests pass with updated dependencies.
    - Dependencies are now 5+ years newer and include important security updates
    - Regular dependency updates should be performed to stay current
    - The core Go codebase (non-Qt parts) is compatible with modern Go toolchains
+   - Use the Docker environment for consistent builds across different development machines
 
 ## Go Version Compatibility
 
@@ -110,6 +139,11 @@ The project now uses `go 1.24.12` (set in go.mod). All updated dependencies are 
 ✅ **Dependency updates successful**: All Go dependencies have been updated to their latest versions
 ✅ **Security verified**: No vulnerabilities detected in updated dependencies  
 ✅ **Tests passing**: Core functionality tests pass with new dependencies
-⚠️ **Build requires SDK**: Full application build requires Sailfish OS SDK for Qt binding regeneration
+✅ **Docker environment added**: Complete containerized build environment for development and CI/CD
+⚠️ **Build requires Qt bindings**: Full application build requires Qt moc generation (via Docker or Sailfish SDK)
 
-The branch is now modernized with up-to-date dependencies and is ready for full compilation once the Qt bindings are regenerated in the Sailfish SDK environment.
+The branch is now modernized with up-to-date dependencies and includes a Docker-based build environment. You can now:
+- Use Docker for development without installing Sailfish OS SDK
+- Run the project in VS Code Dev Containers
+- Use the GitHub Actions workflow for automated CI/CD builds
+- Or continue using the traditional Sailfish OS SDK for RPM packaging

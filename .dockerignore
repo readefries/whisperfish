@@ -1,0 +1,32 @@
+# Git files
+.git
+.gitignore
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+harbour-whisperfish
+
+# Go build cache
+.cache/
+
+# Temporary files
+*.log
+*.tmp
+/tmp/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation build artifacts
+docs/_build/

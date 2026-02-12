@@ -1,0 +1,39 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, master, develop, copilot/* ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Build Docker image
+      run: docker build -t whisperfish-build .
+    
+    - name: Run store tests in container
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          whisperfish-build \
+          bash -c "go mod tidy && go test -v ./store/..."
+    
+    - name: Build store package in container
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          whisperfish-build \
+          go build -v ./store/...
+    
+    # Note: model, worker, settings, and ui packages require Qt bindings (qtmoc-generated code)
+    # which cannot be built in this container due to Go version compatibility with therecipe/qt
+    # For full Qt UI builds, use the Sailfish OS SDK as documented in README.rst
+    # See DOCKER.md for details

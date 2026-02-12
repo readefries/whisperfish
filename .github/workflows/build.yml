@@ -33,14 +33,7 @@ jobs:
           whisperfish-build \
           go build -v ./store/...
     
-    - name: Build model package in container
-      run: |
-        docker run --rm \
-          -v ${{ github.workspace }}:/workspace \
-          -w /workspace \
-          whisperfish-build \
-          go build -v ./model/...
-    
-    # Note: Full build with Qt bindings requires therecipe/qt tools
-    # which are not available in this container due to Go version compatibility
+    # Note: model, worker, settings, and ui packages require Qt bindings (qtmoc-generated code)
+    # which cannot be built in this container due to Go version compatibility with therecipe/qt
+    # For full Qt UI builds, use the Sailfish OS SDK as documented in README.rst
     # See DOCKER.md for details
